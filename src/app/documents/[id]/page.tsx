@@ -3,10 +3,11 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, ChevronRight, Sparkles } from 'lucide-react';
+import { ArrowLeft, Plus, ChevronRight, Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button, DocumentDetailSkeleton } from '@/components/ui';
 import { DeleteModal } from '@/components/documents';
+import { NewVariableModal } from '@/components/variables';
 import { useDocument } from '@/hooks/use-documents';
 import { useVariablesByDocument } from '@/hooks/use-variables';
 import { deleteDocument } from '@/lib/data';
@@ -17,10 +18,11 @@ export default function DocumentDetailPage() {
   const documentId = params.id as string;
 
   const { document, loading: documentLoading } = useDocument(documentId);
-  const { variables, loading: variablesLoading } = useVariablesByDocument(documentId);
+  const { variables, loading: variablesLoading, addVariable } = useVariablesByDocument(documentId);
 
   const [showSkeleton, setShowSkeleton] = useState(true);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isNewVariableModalOpen, setIsNewVariableModalOpen] = useState(false);
 
   const loading = documentLoading || variablesLoading;
 
@@ -34,6 +36,11 @@ export default function DocumentDetailPage() {
     }
     setShowSkeleton(true);
   }, [loading]);
+
+  const handleAddVariable = async (data: { name: string; description: string }) => {
+    await addVariable(data);
+    toast.success('Variable créée');
+  };
 
   const handleDeleteDocument = async () => {
     await deleteDocument(documentId);
@@ -99,22 +106,28 @@ export default function DocumentDetailPage() {
           )}
         </div>
 
-        {/* Associated variables section */}
+        {/* Variables section */}
         <div className="mb-12">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <h2 className="text-lg font-medium text-[#0F0F0F]">Variables</h2>
               <span className="text-sm text-[#6B6B6B]">({variables.length})</span>
             </div>
-            {variables.length > 0 && (
-              <Link
-                href="/variables"
-                className="inline-flex items-center gap-1 text-sm text-[#1D6D1D] hover:underline"
-              >
-                Toutes les variables
-                <ChevronRight className="w-4 h-4" strokeWidth={1.5} />
-              </Link>
-            )}
+            <div className="flex items-center gap-3">
+              {variables.length > 0 && (
+                <Link
+                  href="/variables"
+                  className="inline-flex items-center gap-1 text-sm text-[#6B6B6B] hover:text-[#0F0F0F] transition-colors"
+                >
+                  Toutes les variables
+                  <ChevronRight className="w-4 h-4" strokeWidth={1.5} />
+                </Link>
+              )}
+              <Button size="sm" onClick={() => setIsNewVariableModalOpen(true)}>
+                <Plus className="w-4 h-4" strokeWidth={1.5} />
+                Ajouter
+              </Button>
+            </div>
           </div>
 
           {variables.length === 0 ? (
@@ -125,19 +138,16 @@ export default function DocumentDetailPage() {
                     <Sparkles className="w-5 h-5 text-[#9CA3AF]" strokeWidth={1.5} />
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-[#0F0F0F]">Aucune variable associée</p>
+                    <p className="text-sm font-medium text-[#0F0F0F]">Aucune variable</p>
                     <p className="text-xs text-[#6B6B6B]">
-                      Ce document n&apos;est source d&apos;aucune variable.
+                      Ajoutez les données à extraire de ce document.
                     </p>
                   </div>
                 </div>
-                <Link
-                  href="/variables"
-                  className="inline-flex items-center gap-1 text-sm text-[#1D6D1D] hover:underline"
-                >
-                  Voir les variables
-                  <ChevronRight className="w-4 h-4" strokeWidth={1.5} />
-                </Link>
+                <Button size="sm" onClick={() => setIsNewVariableModalOpen(true)}>
+                  <Plus className="w-4 h-4" strokeWidth={1.5} />
+                  Ajouter
+                </Button>
               </div>
             </div>
           ) : (
@@ -181,6 +191,13 @@ export default function DocumentDetailPage() {
       </div>
 
       {/* Modals */}
+      <NewVariableModal
+        isOpen={isNewVariableModalOpen}
+        documentName={document.name}
+        onClose={() => setIsNewVariableModalOpen(false)}
+        onSubmit={handleAddVariable}
+      />
+
       <DeleteModal
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}

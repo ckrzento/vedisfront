@@ -91,19 +91,28 @@ export function useVariablesByDocument(documentId: string) {
   const [variables, setVariables] = useState<Variable[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchVariables = async () => {
-      setLoading(true);
-      try {
-        const data = await getVariablesByDocument(documentId);
-        setVariables(data);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchVariables();
+  const fetchVariables = useCallback(async () => {
+    setLoading(true);
+    try {
+      const data = await getVariablesByDocument(documentId);
+      setVariables(data);
+    } finally {
+      setLoading(false);
+    }
   }, [documentId]);
 
-  return { variables, loading };
+  useEffect(() => {
+    fetchVariables();
+  }, [fetchVariables]);
+
+  const addVariable = useCallback(async (data: { name: string; description: string }) => {
+    const newVar = await createVariable({
+      ...data,
+      documentIds: [documentId],
+    });
+    setVariables((prev) => [...prev, newVar]);
+    return newVar;
+  }, [documentId]);
+
+  return { variables, loading, addVariable, refetch: fetchVariables };
 }
