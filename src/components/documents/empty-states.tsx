@@ -25,15 +25,23 @@ interface EmptyFieldsProps {
 
 export function EmptyFields({ onAddClick }: EmptyFieldsProps) {
   return (
-    <div className="flex flex-col items-center justify-center py-12">
-      <ListX className="w-8 h-8 text-[#CCCCCC] mb-3" strokeWidth={1.5} />
-      <p className="text-[#6B6B6B] text-sm mb-1">Aucun champ configuré</p>
-      <p className="text-[#6B6B6B] text-xs mb-4">
-        Ajoutez des champs à extraire de ce document.
-      </p>
-      <Button size="sm" onClick={onAddClick}>
-        Ajouter un champ
-      </Button>
+    <div className="bg-white rounded-lg border border-dashed border-[#D4D4D4] p-6">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 bg-[#F5F5F5] rounded-lg flex items-center justify-center">
+            <ListX className="w-5 h-5 text-[#9CA3AF]" strokeWidth={1.5} />
+          </div>
+          <div>
+            <p className="text-sm font-medium text-[#0F0F0F]">Aucun champ configuré</p>
+            <p className="text-xs text-[#6B6B6B]">
+              Définissez les données à extraire de ce document.
+            </p>
+          </div>
+        </div>
+        <Button size="sm" onClick={onAddClick}>
+          Ajouter un champ
+        </Button>
+      </div>
     </div>
   );
 }

@@ -141,16 +141,16 @@ export default function DocumentDetailPage() {
               <h2 className="text-lg font-medium text-[#0F0F0F]">Champs</h2>
               <span className="text-sm text-[#6B6B6B]">({fields.length})</span>
             </div>
-            <Button size="sm" onClick={() => setIsNewFieldModalOpen(true)}>
-              <Plus className="w-4 h-4" strokeWidth={1.5} />
-              Ajouter
-            </Button>
+            {fields.length > 0 && (
+              <Button size="sm" onClick={() => setIsNewFieldModalOpen(true)}>
+                <Plus className="w-4 h-4" strokeWidth={1.5} />
+                Ajouter
+              </Button>
+            )}
           </div>
 
           {fields.length === 0 ? (
-            <div className="bg-white rounded-lg border border-[#E8E8E8]">
-              <EmptyFields onAddClick={() => setIsNewFieldModalOpen(true)} />
-            </div>
+            <EmptyFields onAddClick={() => setIsNewFieldModalOpen(true)} />
           ) : (
             <div className="bg-white rounded-lg border border-[#E8E8E8] divide-y divide-[#E8E8E8]">
               {fields.map((field) => (
@@ -172,29 +172,39 @@ export default function DocumentDetailPage() {
               <h2 className="text-lg font-medium text-[#0F0F0F]">Variables associées</h2>
               <span className="text-sm text-[#6B6B6B]">({variables.length})</span>
             </div>
-            <Link
-              href={`/variables?document=${documentId}`}
-              className="inline-flex items-center gap-1 text-sm text-[#1D6D1D] hover:underline"
-            >
-              Gérer les variables
-              <ChevronRight className="w-4 h-4" strokeWidth={1.5} />
-            </Link>
+            {variables.length > 0 && (
+              <Link
+                href="/variables"
+                className="inline-flex items-center gap-1 text-sm text-[#1D6D1D] hover:underline"
+              >
+                Toutes les variables
+                <ChevronRight className="w-4 h-4" strokeWidth={1.5} />
+              </Link>
+            )}
           </div>
 
           {variables.length === 0 ? (
-            <div className="bg-white rounded-lg border border-[#E8E8E8] p-8 text-center">
-              <div className="w-10 h-10 bg-[#F5F5F5] rounded-full flex items-center justify-center mx-auto mb-3">
-                <Sparkles className="w-5 h-5 text-[#6B6B6B]" strokeWidth={1.5} />
+            <div className="bg-white rounded-lg border border-dashed border-[#D4D4D4] p-6">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 bg-[#F5F5F5] rounded-lg flex items-center justify-center">
+                    <Sparkles className="w-5 h-5 text-[#9CA3AF]" strokeWidth={1.5} />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-[#0F0F0F]">Aucune variable associée</p>
+                    <p className="text-xs text-[#6B6B6B]">
+                      Les variables définissent les données partagées entre documents.
+                    </p>
+                  </div>
+                </div>
+                <Link
+                  href="/variables"
+                  className="inline-flex items-center gap-1 text-sm text-[#1D6D1D] hover:underline"
+                >
+                  Voir les variables
+                  <ChevronRight className="w-4 h-4" strokeWidth={1.5} />
+                </Link>
               </div>
-              <p className="text-sm text-[#6B6B6B] mb-3">
-                Aucune variable n&apos;est associée à ce document.
-              </p>
-              <Link
-                href={`/variables?document=${documentId}`}
-                className="text-sm text-[#1D6D1D] hover:underline"
-              >
-                Associer des variables
-              </Link>
             </div>
           ) : (
             <div className="bg-white rounded-lg border border-[#E8E8E8] divide-y divide-[#E8E8E8]">
