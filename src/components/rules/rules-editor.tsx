@@ -354,7 +354,8 @@ function TipTapEditor({
                 } as unknown as MentionItem);
               },
             },
-            editor: props.editor as Parameters<typeof ReactRenderer>[1]['editor'],
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            editor: props.editor as any,
           });
 
           if (!props.clientRect) {
