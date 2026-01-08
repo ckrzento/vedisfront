@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useCallback, useState, useMemo, forwardRef, u
 import { useEditor, EditorContent, ReactRenderer } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Placeholder from '@tiptap/extension-placeholder';
+import Underline from '@tiptap/extension-underline';
 import { HelpCircle, FileText, Variable } from 'lucide-react';
 import { DocumentType, Variable as VariableType } from '@/lib/types';
 import { CustomMention, MentionType, MentionItem } from './mention-extension';
@@ -89,6 +90,22 @@ function serializeToStorage(html: string): string {
 
       if (element.tagName === 'BR') {
         return '';
+      }
+
+      // Preserve bold/strong tags
+      if (element.tagName === 'STRONG') {
+        const childContent = Array.from(element.childNodes)
+          .map(processNode)
+          .join('');
+        return `<strong>${childContent}</strong>`;
+      }
+
+      // Preserve underline tags
+      if (element.tagName === 'U') {
+        const childContent = Array.from(element.childNodes)
+          .map(processNode)
+          .join('');
+        return `<u>${childContent}</u>`;
       }
 
       return Array.from(element.childNodes).map(processNode).join('');
@@ -393,6 +410,7 @@ function TipTapEditor({
           levels: [1],
         },
       }),
+      Underline,
       Placeholder.configure({
         placeholder: 'Écrivez vos règles ici... Tapez @ pour mentionner un document ou une variable.',
       }),
@@ -512,6 +530,21 @@ export function RulesEditor({
           .rules-editor p {
             margin: 0;
             min-height: 1.7em;
+          }
+
+          .rules-editor u strong,
+          .rules-editor strong u {
+            font-size: 16px;
+            font-weight: 700;
+            color: #0F0F0F;
+            display: inline-block;
+            margin-top: 20px;
+            margin-bottom: 8px;
+          }
+
+          .rules-editor p:first-child u strong,
+          .rules-editor p:first-child strong u {
+            margin-top: 0;
           }
 
           .rules-editor .is-editor-empty:first-child::before {
