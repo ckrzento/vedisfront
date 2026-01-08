@@ -7,15 +7,6 @@ export interface DocumentType {
   dependsOn?: string[];
 }
 
-export interface Field {
-  id: string;
-  documentTypeId: string;
-  name: string;
-  description?: string;
-  required: boolean;
-  isSystem: boolean;
-}
-
 export interface Variable {
   id: string;
   name: string;

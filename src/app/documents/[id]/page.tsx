@@ -3,20 +3,13 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, Plus, ChevronRight, Sparkles } from 'lucide-react';
+import { ArrowLeft, ChevronRight, Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button, DocumentDetailSkeleton } from '@/components/ui';
-import {
-  FieldRow,
-  NewFieldModal,
-  EditFieldModal,
-  DeleteModal,
-  EmptyFields,
-} from '@/components/documents';
-import { useDocument, useFields } from '@/hooks/use-documents';
+import { DeleteModal } from '@/components/documents';
+import { useDocument } from '@/hooks/use-documents';
 import { useVariablesByDocument } from '@/hooks/use-variables';
 import { deleteDocument } from '@/lib/data';
-import { Field } from '@/lib/types';
 
 export default function DocumentDetailPage() {
   const router = useRouter();
@@ -24,16 +17,12 @@ export default function DocumentDetailPage() {
   const documentId = params.id as string;
 
   const { document, loading: documentLoading } = useDocument(documentId);
-  const { fields, loading: fieldsLoading, addField, editField, removeField } = useFields(documentId);
   const { variables, loading: variablesLoading } = useVariablesByDocument(documentId);
 
   const [showSkeleton, setShowSkeleton] = useState(true);
-  const [isNewFieldModalOpen, setIsNewFieldModalOpen] = useState(false);
-  const [editingField, setEditingField] = useState<Field | null>(null);
-  const [deletingField, setDeletingField] = useState<Field | null>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
-  const loading = documentLoading || fieldsLoading || variablesLoading;
+  const loading = documentLoading || variablesLoading;
 
   // Ensure skeleton shows for at least 400ms
   useEffect(() => {
@@ -45,30 +34,6 @@ export default function DocumentDetailPage() {
     }
     setShowSkeleton(true);
   }, [loading]);
-
-  const handleAddField = async (data: { name: string; description: string; required: boolean }) => {
-    await addField(data);
-    toast.success('Champ ajouté avec succès');
-  };
-
-  const handleEditField = async (data: { name: string; description: string; required: boolean }) => {
-    if (!editingField) return;
-    await editField(editingField.id, data);
-    toast.success('Champ modifié avec succès');
-  };
-
-  const handleDeleteFieldRequest = () => {
-    if (!editingField) return;
-    setDeletingField(editingField);
-    setEditingField(null);
-  };
-
-  const handleDeleteFieldConfirm = async () => {
-    if (!deletingField) return;
-    await removeField(deletingField.id);
-    toast.success('Champ supprimé');
-    setDeletingField(null);
-  };
 
   const handleDeleteDocument = async () => {
     await deleteDocument(documentId);
@@ -134,42 +99,11 @@ export default function DocumentDetailPage() {
           )}
         </div>
 
-        {/* Fields section */}
-        <div className="mb-12">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2">
-              <h2 className="text-lg font-medium text-[#0F0F0F]">Champs</h2>
-              <span className="text-sm text-[#6B6B6B]">({fields.length})</span>
-            </div>
-            {fields.length > 0 && (
-              <Button size="sm" onClick={() => setIsNewFieldModalOpen(true)}>
-                <Plus className="w-4 h-4" strokeWidth={1.5} />
-                Ajouter
-              </Button>
-            )}
-          </div>
-
-          {fields.length === 0 ? (
-            <EmptyFields onAddClick={() => setIsNewFieldModalOpen(true)} />
-          ) : (
-            <div className="bg-white rounded-lg border border-[#E8E8E8] divide-y divide-[#E8E8E8]">
-              {fields.map((field) => (
-                <FieldRow
-                  key={field.id}
-                  field={field}
-                  onEdit={setEditingField}
-                  onDelete={setDeletingField}
-                />
-              ))}
-            </div>
-          )}
-        </div>
-
         {/* Associated variables section */}
         <div className="mb-12">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
-              <h2 className="text-lg font-medium text-[#0F0F0F]">Variables associées</h2>
+              <h2 className="text-lg font-medium text-[#0F0F0F]">Variables</h2>
               <span className="text-sm text-[#6B6B6B]">({variables.length})</span>
             </div>
             {variables.length > 0 && (
@@ -193,7 +127,7 @@ export default function DocumentDetailPage() {
                   <div>
                     <p className="text-sm font-medium text-[#0F0F0F]">Aucune variable associée</p>
                     <p className="text-xs text-[#6B6B6B]">
-                      Les variables définissent les données partagées entre documents.
+                      Ce document n&apos;est source d&apos;aucune variable.
                     </p>
                   </div>
                 </div>
@@ -247,34 +181,12 @@ export default function DocumentDetailPage() {
       </div>
 
       {/* Modals */}
-      <NewFieldModal
-        isOpen={isNewFieldModalOpen}
-        onClose={() => setIsNewFieldModalOpen(false)}
-        onSubmit={handleAddField}
-      />
-
-      <EditFieldModal
-        isOpen={!!editingField}
-        field={editingField}
-        onClose={() => setEditingField(null)}
-        onSubmit={handleEditField}
-        onDeleteRequest={handleDeleteFieldRequest}
-      />
-
       <DeleteModal
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
         onConfirm={handleDeleteDocument}
         title="Supprimer ce document"
-        message="Cette action est irréversible. Tous les champs associés seront également supprimés."
-      />
-
-      <DeleteModal
-        isOpen={!!deletingField}
-        onClose={() => setDeletingField(null)}
-        onConfirm={handleDeleteFieldConfirm}
-        title="Supprimer ce champ"
-        message={`Voulez-vous vraiment supprimer le champ "${deletingField?.name}" ?`}
+        message="Cette action est irréversible."
       />
     </div>
   );

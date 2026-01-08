@@ -1,4 +1,4 @@
-import { DocumentType, Field, Variable, RulesConfig } from './types';
+import { DocumentType, Variable, RulesConfig } from './types';
 
 // Simulate API delay
 export const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
@@ -82,69 +82,7 @@ let documents: DocumentType[] = [
   },
 ];
 
-// Initial fields data
-let fields: Field[] = [
-  // KBIS fields
-  { id: 'f1', documentTypeId: 'kbis', name: 'Raison sociale', description: 'Nom officiel de l\'entreprise', required: true, isSystem: false },
-  { id: 'f2', documentTypeId: 'kbis', name: 'SIREN', description: 'Numéro d\'identification à 9 chiffres', required: true, isSystem: false },
-  { id: 'f3', documentTypeId: 'kbis', name: 'SIRET', description: 'Numéro d\'identification de l\'établissement', required: true, isSystem: false },
-  { id: 'f4', documentTypeId: 'kbis', name: 'Forme juridique', description: 'Type de société (SAS, SARL, etc.)', required: true, isSystem: false },
-  { id: 'f5', documentTypeId: 'kbis', name: 'Capital social', description: 'Montant du capital de la société', required: true, isSystem: false },
-  { id: 'f6', documentTypeId: 'kbis', name: 'Adresse du siège', description: 'Adresse complète du siège social', required: true, isSystem: false },
-  { id: 'f7', documentTypeId: 'kbis', name: 'Code postal', description: 'Code postal du siège', required: true, isSystem: false },
-  { id: 'f8', documentTypeId: 'kbis', name: 'Ville', description: 'Ville du siège social', required: true, isSystem: false },
-  { id: 'f9', documentTypeId: 'kbis', name: 'Date du document', description: 'Date d\'émission du KBIS', required: true, isSystem: false },
-  { id: 'f10', documentTypeId: 'kbis', name: 'Dirigeants', description: 'Liste des dirigeants de l\'entreprise', required: true, isSystem: false },
-
-  // RIB fields
-  { id: 'f11', documentTypeId: 'rib', name: 'IBAN', description: 'Identifiant international du compte', required: true, isSystem: false },
-  { id: 'f12', documentTypeId: 'rib', name: 'BIC', description: 'Code d\'identification de la banque', required: true, isSystem: false },
-  { id: 'f13', documentTypeId: 'rib', name: 'Titulaire du compte', description: 'Nom du détenteur du compte', required: true, isSystem: false },
-  { id: 'f14', documentTypeId: 'rib', name: 'Banque', description: 'Nom de l\'établissement bancaire', required: false, isSystem: false },
-
-  // Pièce d'identité fields
-  { id: 'f15', documentTypeId: 'piece_identite', name: 'Nom', description: 'Nom de famille', required: true, isSystem: false },
-  { id: 'f16', documentTypeId: 'piece_identite', name: 'Prénom', description: 'Prénom(s)', required: true, isSystem: false },
-  { id: 'f17', documentTypeId: 'piece_identite', name: 'Date de naissance', description: 'Date de naissance du titulaire', required: true, isSystem: false },
-  { id: 'f18', documentTypeId: 'piece_identite', name: 'Numéro du document', description: 'Numéro unique d\'identification', required: true, isSystem: false },
-  { id: 'f19', documentTypeId: 'piece_identite', name: 'Date d\'expiration', description: 'Date de validité du document', required: true, isSystem: false },
-
-  // Contrat VEDIS fields
-  { id: 'f20', documentTypeId: 'contrat_vedis', name: 'Numéro de contrat', description: 'Référence unique du contrat', required: true, isSystem: false },
-  { id: 'f21', documentTypeId: 'contrat_vedis', name: 'Date de signature', description: 'Date de signature du contrat', required: true, isSystem: false },
-  { id: 'f22', documentTypeId: 'contrat_vedis', name: 'Montant', description: 'Montant total du contrat', required: true, isSystem: false },
-
-  // Contrat de financement fields
-  { id: 'f23', documentTypeId: 'contrat_financement', name: 'Référence financement', description: 'Numéro de référence du financement', required: true, isSystem: false },
-  { id: 'f24', documentTypeId: 'contrat_financement', name: 'Montant financé', description: 'Montant total financé', required: true, isSystem: false },
-  { id: 'f25', documentTypeId: 'contrat_financement', name: 'Durée', description: 'Durée du financement en mois', required: true, isSystem: false },
-  { id: 'f26', documentTypeId: 'contrat_financement', name: 'Taux', description: 'Taux d\'intérêt appliqué', required: false, isSystem: false },
-
-  // Accord de financement
-  { id: 'f27', documentTypeId: 'accord_financement', name: 'Date d\'accord', description: 'Date de validation de l\'accord', required: true, isSystem: false },
-  { id: 'f28', documentTypeId: 'accord_financement', name: 'Signataire', description: 'Nom du signataire de l\'accord', required: true, isSystem: false },
-
-  // Pouvoir de signature
-  { id: 'f29', documentTypeId: 'pouvoir_signature', name: 'Mandant', description: 'Personne donnant le pouvoir', required: true, isSystem: false },
-  { id: 'f30', documentTypeId: 'pouvoir_signature', name: 'Mandataire', description: 'Personne recevant le pouvoir', required: true, isSystem: false },
-  { id: 'f31', documentTypeId: 'pouvoir_signature', name: 'Périmètre', description: 'Étendue du pouvoir délégué', required: false, isSystem: false },
-
-  // Offre de solde
-  { id: 'f32', documentTypeId: 'offre_solde', name: 'Montant du solde', description: 'Montant restant à payer', required: true, isSystem: false },
-  { id: 'f33', documentTypeId: 'offre_solde', name: 'Date limite', description: 'Date limite de paiement', required: true, isSystem: false },
-
-  // Certificat DocuSign
-  { id: 'f34', documentTypeId: 'certificat_docusign', name: 'ID certificat', description: 'Identifiant unique du certificat', required: true, isSystem: false },
-  { id: 'f35', documentTypeId: 'certificat_docusign', name: 'Date de signature', description: 'Date et heure de signature', required: true, isSystem: false },
-
-  // Mandat SEPA
-  { id: 'f36', documentTypeId: 'mandat_sepa', name: 'RUM', description: 'Référence unique du mandat', required: true, isSystem: false },
-  { id: 'f37', documentTypeId: 'mandat_sepa', name: 'Date de signature', description: 'Date de signature du mandat', required: true, isSystem: false },
-  { id: 'f38', documentTypeId: 'mandat_sepa', name: 'Créancier', description: 'Identifiant du créancier', required: true, isSystem: false },
-];
-
-let nextDocumentId = 12;
-let nextFieldId = 39;
+let nextDocumentId = 13;
 
 // Document CRUD operations
 export async function getDocuments(): Promise<DocumentType[]> {
@@ -184,7 +122,6 @@ export async function deleteDocument(id: string): Promise<boolean> {
 
   const initialLength = documents.length;
   documents = documents.filter(d => d.id !== id);
-  fields = fields.filter(f => f.documentTypeId !== id);
   return documents.length < initialLength;
 }
 
@@ -192,41 +129,6 @@ export function documentNameExists(name: string, excludeId?: string): boolean {
   return documents.some(d =>
     d.name.toLowerCase() === name.toLowerCase() && d.id !== excludeId
   );
-}
-
-// Field CRUD operations
-export async function getFieldsByDocument(documentTypeId: string): Promise<Field[]> {
-  await delay(API_DELAY);
-  return fields.filter(f => f.documentTypeId === documentTypeId);
-}
-
-export async function createField(data: Omit<Field, 'id'>): Promise<Field> {
-  await delay(API_DELAY);
-  const newField: Field = {
-    ...data,
-    id: `f${nextFieldId++}`,
-  };
-  fields = [...fields, newField];
-  return newField;
-}
-
-export async function updateField(id: string, data: Partial<Omit<Field, 'id' | 'documentTypeId' | 'isSystem'>>): Promise<Field | undefined> {
-  await delay(API_DELAY);
-  const index = fields.findIndex(f => f.id === id);
-  if (index === -1) return undefined;
-
-  fields[index] = { ...fields[index], ...data };
-  return fields[index];
-}
-
-export async function deleteField(id: string): Promise<boolean> {
-  await delay(API_DELAY);
-  const field = fields.find(f => f.id === id);
-  if (!field) return false;
-
-  const initialLength = fields.length;
-  fields = fields.filter(f => f.id !== id);
-  return fields.length < initialLength;
 }
 
 // Initial variables data
